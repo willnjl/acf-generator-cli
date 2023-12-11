@@ -5,15 +5,7 @@ use std::collections::HashMap;
 pub struct FieldGroup {
     key: String,
     title: String,
-    pub fields: Vec<FlexibleContent>,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct FlexibleContent {
-    key: String,
-    pub label: String,
-    name: String,
-    layouts: Option<HashMap<String, Layout>>,
+    pub fields: Option<Vec<Field>>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -29,5 +21,19 @@ pub struct Field {
     key: String,
     name: String,
     label: String,
+    r#type: String,
+    layouts: Option<HashMap<String, Layout>>,
     sub_fields: Option<Vec<Field>>,
+}
+
+impl Field {
+    pub fn label(&self) -> &str {
+        &self.label
+    }
+    pub fn r#type(&self) -> &str {
+        &self.r#type
+    }
+    pub fn name(&self) -> &str {
+        &self.name
+    }
 }

@@ -5,6 +5,7 @@ use std::io::Read;
 use std::path::Path;
 
 mod acf_fields;
+mod php_generator;
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
@@ -12,7 +13,7 @@ mod acf_fields;
 struct Args {
     /// src file containing acf fields (JSON)
     #[arg(short, long)]
-    input: String,
+    src: String,
 
     /// destination folder
     #[arg(short, long, default_value = "./")]
@@ -33,16 +34,25 @@ fn read_file(path: &str) -> FieldGroup {
 }
 
 fn write_files(data: FieldGroup, dest: &str) {
-    for item in data.fields {
-        let filename = format!("{}/{}.php", dest, item.label);
-        std::fs::write(filename, item.label).expect("Error writing file");
+    match data.fields {
+        Some(fields) => {
+            for field in fields {
+                let php_gen = php_generator::PhpFileGenerator::new(field.name(), dest);
+
+                if let Some(mut i) = php_gen {
+                    i.add_function("label", " return 2 + 2;");
+                    i.add_function("label", " return 4 + 4;");
+                }
+            }
+        }
+        _ => {}
     }
 }
 
 fn main() {
     let args = Args::parse();
 
-    let json_string = read_file(&args.input);
+    let json_string = read_file(&args.src);
 
-    write_files(json_string, &args.dest);
+    write_files(json_string, &args.dest)
 }
