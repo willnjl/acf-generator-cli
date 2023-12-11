@@ -1,13 +1,7 @@
 <?php 
 
 
-function label() {
-     return 2 + 2;
-}
-
-
-function label() {
-     return 4 + 4;
-}
+//Flexible Content - flexible_content
+ $flexible_content = get_sub_field("flexible_content"); 
 
 

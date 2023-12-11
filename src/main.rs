@@ -34,18 +34,13 @@ fn read_file(path: &str) -> FieldGroup {
 }
 
 fn write_files(data: FieldGroup, dest: &str) {
-    match data.fields {
-        Some(fields) => {
-            for field in fields {
-                let php_gen = php_generator::PhpFileGenerator::new(field.name(), dest);
-
-                if let Some(mut i) = php_gen {
-                    i.add_function("label", " return 2 + 2;");
-                    i.add_function("label", " return 4 + 4;");
-                }
+    if let Some(fields) = data.fields {
+        for field in fields {
+            let php_gen = php_generator::PhpFileGenerator::new(field.name(), dest);
+            if let Some(mut i) = php_gen {
+                i.add_field(field.name(), field.label(), field.r#type());
             }
         }
-        _ => {}
     }
 }
 

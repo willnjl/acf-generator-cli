@@ -22,10 +22,10 @@ impl PhpFileGenerator {
         };
     }
 
-    pub fn add_function(&mut self, function_name: &str, function_body: &str) {
+    pub fn add_field(&mut self, name: &str, label: &str, field_type: &str) {
         let content = format!(
-            "function {}() {{\n    {}\n}}\n\n",
-            function_name, function_body
+            "//{} - {}\n ${} = get_sub_field(\"{}\"); \n\n",
+            label, field_type, name, name
         );
 
         self.write_to_file(&content);
