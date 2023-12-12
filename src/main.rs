@@ -1,5 +1,6 @@
 use acf_fields::{Field, FieldGroup};
 use clap::Parser;
+use php_generator::PhpFileGenerator;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -33,13 +34,28 @@ fn read_file(path: &str) -> FieldGroup {
     data
 }
 
-fn write_files(data: FieldGroup, dest: &str) {
-    if let Some(fields) = data.fields {
-        for field in fields {
-            let php_gen = php_generator::PhpFileGenerator::new(field.name(), dest);
-            if let Some(mut i) = php_gen {
-                i.add_field(field.name(), field.label(), field.r#type());
+fn process_field_group(group: &FieldGroup, dest: &str) {
+    println!("Processing field: {}", group.label());
+    for field in group.fields() {
+        process_field_recursive(&field, &dest, None);
+    }
+}
+
+fn process_field_recursive(field: &Field, dest: &str, file: Option<&PhpFileGenerator>) {
+    if let Some(layouts) = &field.layouts() {
+        for (key, layout) in layouts {
+            println!("Processing layout with key: {}", key);
+            if let Some(file) = PhpFileGenerator::new(layout.name(), &dest) {
+                for layout_field in layout.sub_fields() {
+                    process_field_recursive(&layout_field, &dest, Some(&file));
+                }
             }
+        }
+    }
+
+    if let Some(sub_fields) = &field.sub_fields() {
+        for sub_field in sub_fields {
+            process_field_recursive(sub_field, dest, file);
         }
     }
 }
@@ -49,5 +65,5 @@ fn main() {
 
     let json_string = read_file(&args.src);
 
-    write_files(json_string, &args.dest)
+    process_field_group(&json_string, &args.dest);
 }

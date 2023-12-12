@@ -3,6 +3,7 @@
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
+
 pub struct PhpFileGenerator {
     file: File,
 }
@@ -11,14 +12,14 @@ impl PhpFileGenerator {
     pub fn new(file_name: &str, dest: &str) -> Option<PhpFileGenerator> {
         let path = format!("{}/{}.php", dest, file_name);
 
-        let mut file = OpenOptions::new().create_new(true).write(true).open(path);
+        let file = OpenOptions::new().create_new(true).write(true).open(path);
 
         return match file {
             Ok(file) => {
                 writeln!(&file, "{}", "<?php \n\n").expect("Write Fail");
                 Some(PhpFileGenerator { file })
             }
-            Err(e) => None,
+            Err(_e) => None,
         };
     }
 
