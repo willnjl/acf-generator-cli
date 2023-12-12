@@ -24,6 +24,22 @@ impl PhpFileGenerator {
         };
     }
 
+    pub fn start_loop(&mut self) {
+        let mut buff = String::new();
+        buff.push_str("if(have_rows()): ?>\n\n");
+        buff.push_str("\t\t<? while(have_rows()): the_row();  ?>\n\n");
+        buff.push_str("\t\t\t");
+
+        self.write_to_file(&buff.to_string());
+    }
+
+    pub fn end_loop(&mut self) {
+        let mut buff = String::new();
+        buff.push_str("\t\t<? endwhile;  ?>\n\n");
+        buff.push_str(" <? endif; wp_reset_query();?>\n\n");
+        self.write_to_file(&buff.to_string());
+    }
+
     pub fn add_field(&mut self, field: &Field) {
         let content = format!(
             "// --- {} - {}\n ${} = get_sub_field(\"{}\"); \n",
