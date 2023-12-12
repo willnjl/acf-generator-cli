@@ -26,7 +26,7 @@ impl PhpFileGenerator {
 
     pub fn add_field(&mut self, field: &Field) {
         let content = format!(
-            "//{} - {}\n ${} = get_sub_field(\"{}\"); \n\n",
+            "// --- {} - {}\n ${} = get_sub_field(\"{}\"); \n",
             field.label(),
             field.field_type(),
             field.name(),
