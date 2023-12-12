@@ -37,25 +37,29 @@ fn read_file(path: &str) -> FieldGroup {
 fn process_field_group(group: &FieldGroup, dest: &str) {
     println!("Processing field: {}", group.label());
     for field in group.fields() {
-        process_field_recursive(&field, &dest, None);
+        process_field_recursive(&field, &dest, &mut None);
     }
 }
 
-fn process_field_recursive(field: &Field, dest: &str, file: Option<&PhpFileGenerator>) {
-    if let Some(layouts) = &field.layouts() {
-        for (key, layout) in layouts {
-            println!("Processing layout with key: {}", key);
-            if let Some(file) = PhpFileGenerator::new(layout.name(), &dest) {
-                for layout_field in layout.sub_fields() {
-                    process_field_recursive(&layout_field, &dest, Some(&file));
-                }
-            }
-        }
-    }
-
+fn process_field_recursive(field: &Field, dest: &str, file: &mut Option<&mut PhpFileGenerator>) {
     if let Some(sub_fields) = &field.sub_fields() {
         for sub_field in sub_fields {
             process_field_recursive(sub_field, dest, file);
+        }
+    }
+
+    if let Some(file) = file {
+        file.add_field(field);
+    }
+
+    if let Some(layouts) = &field.layouts() {
+        for (key, layout) in layouts {
+            println!("Processing layout with key: {}", layout.name());
+            if let Some(mut file) = PhpFileGenerator::new(layout.name(), dest) {
+                for layout_field in layout.sub_fields() {
+                    process_field_recursive(layout_field, dest, &mut Some(&mut file));
+                }
+            }
         }
     }
 }

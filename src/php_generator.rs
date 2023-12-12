@@ -1,5 +1,6 @@
 // src/php_generator.rs
 
+use crate::acf_fields::Field;
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
@@ -23,10 +24,13 @@ impl PhpFileGenerator {
         };
     }
 
-    pub fn add_field(&mut self, name: &str, label: &str, field_type: &str) {
+    pub fn add_field(&mut self, field: &Field) {
         let content = format!(
             "//{} - {}\n ${} = get_sub_field(\"{}\"); \n\n",
-            label, field_type, name, name
+            field.label(),
+            field.field_type(),
+            field.name(),
+            field.name()
         );
 
         self.write_to_file(&content);
