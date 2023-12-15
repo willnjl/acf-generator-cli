@@ -26,7 +26,7 @@ The ACF Field Generator CLI is a Rust-based command-line tool designed to expedi
 
 
 1. clone repository
-    `git clone git@github.com:willnjl/acf-generator-cli.git`
+    `git clone git@github.com:willnjl/flex-gen-acf.git`
 2. install executable (Unix)
     `cargo build && sudo cp target/debug/flex-gen-acf /usr/local/bin`
 3. Run your Rust CLI app from anywhere on your machine.
