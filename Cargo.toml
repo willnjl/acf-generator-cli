@@ -22,5 +22,5 @@ serde = {version = "1.0", features = ["derive"]}
 serde_json = "1.0.108"
 
 [[bin]]
-name = "acf-cli"
+name = "flex-gen-acf"
 path = "src/main.rs"

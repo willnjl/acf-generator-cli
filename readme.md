@@ -2,11 +2,11 @@
 
 ## Overview
 
-The ACF Field Generator CLI is a Rust-based command-line tool designed to expedite the process of generating PHP boilerplate code for Advanced Custom Fields (ACF) from a JSON representation. This tool aims to reduce the time and effort spent on the repetitive task of translating ACF field configurations into PHP code.
+The ACF Field Generator CLI is a Rust-based command-line tool designed to expedite the process of generating boilerplate PHP templates from a JSON representation created by Advanced Custom Fields (ACF). This tool aims to reduce the time and effort spent on the repetitive task of translating ACF field configurations into PHP code.
 
 ## Features
 
-- **JSON to PHP Conversion:** Converts ACF field configurations stored in JSON format into corresponding PHP boilerplate code.
+- **JSON to PHP Conversion:** Converts ACF field configurations stored in JSON format into corresponding wordpress boilerplate.
   
 - **Customizable Output:** Allows users to specify output preferences, such as the file name, directory, and other relevant options.
 
@@ -22,15 +22,18 @@ The ACF Field Generator CLI is a Rust-based command-line tool designed to expedi
 
 
 
-### Development
-`cargo run -- --src ./data.json --dest ./output`
-
-### Installation
+### Usage
 
 
 1. clone repository
     `git clone git@github.com:willnjl/acf-generator-cli.git`
 2. install executable (Unix)
-    `cargo build && sudo cp target/debug/acf-cli /usr/local/bin`
+    `cargo build && sudo cp target/debug/flex-gen-acf /usr/local/bin`
 3. Run your Rust CLI app from anywhere on your machine.
-   `acf-cli`
+   `flex-gen-acf`
+
+### Development
+```shell 
+cargo watch -s 'cargo run -- --src ./data.json --dest ./blocks -o
+```  
+
