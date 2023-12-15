@@ -8,23 +8,30 @@ pub struct PhpFileGenerator {
 }
 
 impl PhpFileGenerator {
-    pub fn new(file_name: &str, dest: &str) -> PhpFileGenerator {
+    pub fn new(file_name: &str, dest: &str, overwrite: bool) -> PhpFileGenerator {
         let path = format!("{}/{}.php", dest, file_name);
 
-        return match OpenOptions::new()
-            .create(true)
-            .write(true)
-            .truncate(true)
-            .open(path)
-        {
+        if (overwrite) {
+            return match OpenOptions::new()
+                .create(true)
+                .write(true)
+                .truncate(true)
+                .open(path)
+            {
+                Ok(file) => PhpFileGenerator { file: Some(file) },
+                Err(_) => PhpFileGenerator { file: None },
+            };
+        };
+
+        return match OpenOptions::new().create_new(true).write(true).open(path) {
             Ok(file) => PhpFileGenerator { file: Some(file) },
             Err(_) => PhpFileGenerator { file: None },
         };
     }
 
     pub fn template_start(field: &Field, indentation: isize) -> String {
-        let inner = PhpFileGenerator::get_indent(indentation, 1);
-        let outer = PhpFileGenerator::get_indent(indentation, 0);
+        let inner = Self::get_indent(indentation, 1);
+        let outer = Self::get_indent(indentation, 0);
         match field.get_kind() {
             FieldKind::Relationship => String::new(),
             FieldKind::Repeater => {
@@ -37,8 +44,8 @@ impl PhpFileGenerator {
         }
     }
     pub fn template_end(field: &Field, indentation: isize) -> String {
-        let inner = PhpFileGenerator::get_indent(indentation, 0);
-        let outer = PhpFileGenerator::get_indent(indentation, -1);
+        let inner = Self::get_indent(indentation, 0);
+        let outer = Self::get_indent(indentation, -1);
         match field.get_kind() {
             FieldKind::Relationship => String::new(),
             FieldKind::Repeater => {
@@ -53,7 +60,7 @@ impl PhpFileGenerator {
     }
 
     pub fn add_field(field: &Field, indentation: isize) -> String {
-        let indent = PhpFileGenerator::get_indent(indentation, 0);
+        let indent = Self::get_indent(indentation, 0);
         return match field.get_kind() {
             FieldKind::Generic => {
                 format!(

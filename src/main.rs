@@ -21,6 +21,9 @@ struct Args {
     /// destination folder
     #[arg(short, long, default_value = "./")]
     dest: String,
+
+    #[arg(short, long)]
+    overwrite: bool,
 }
 
 /**
@@ -36,14 +39,14 @@ fn read_file(path: &str) -> FieldGroup {
     data
 }
 
-fn process_field_group(group: &FieldGroup, dest: &str) {
+fn process_field_group(group: &FieldGroup, dest: &str, ow: bool) {
     println!("Processing field: {}", group.label());
     for field in group.fields() {
-        if (field.get_kind() == FieldKind::FlexibleContent) {
+        if field.get_kind() == FieldKind::FlexibleContent {
             if let Some(layouts) = &field.layouts {
-                for (key, layout) in &layouts.0 {
+                for (_, layout) in &layouts.0 {
                     let mut buffer = "<?php \n".to_string();
-                    let mut writer = PhpFileGenerator::new(layout.name(), "./output");
+                    let mut writer = PhpFileGenerator::new(layout.name(), "./output", ow);
                     let indent: isize = 0;
                     for field in &layout.sub_fields {
                         buffer.push_str(&proccess_field(&field, indent));
@@ -80,5 +83,5 @@ fn main() {
 
     let json_string = read_file(&args.src);
 
-    process_field_group(&json_string, &args.dest);
+    process_field_group(&json_string, &args.dest, args.overwrite);
 }
