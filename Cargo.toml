@@ -1,7 +1,7 @@
 [package]
+edition = "2021"
 name = "acf-cli"
 version = "0.1.0"
-edition = "2021"
 
 [dev-dependencies]
 cargo-watch = "8.4.1"
@@ -11,13 +11,14 @@ ignore = [
   "target/*",
   "Cargo.lock",
   "**/*.rs.bk",
-  "output/*"
+  "**/*.php",
+  "blocks/",
+  "output",
 ]
 
-
 [dependencies]
-clap = { version = "4.4.11", features = ["derive"] }
-serde = { version = "1.0", features = ["derive"] }
+clap = {version = "4.4.11", features = ["derive"]}
+serde = {version = "1.0", features = ["derive"]}
 serde_json = "1.0.108"
 
 [[bin]]
