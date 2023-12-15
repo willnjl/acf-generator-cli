@@ -43,12 +43,12 @@ fn process_field_group(group: &FieldGroup, dest: &str, ow: bool) {
     println!("Processing field: {}", group.label());
     for field in group.fields() {
         if field.get_kind() == FieldKind::FlexibleContent {
-            if let Some(layouts) = &field.layouts {
+            if let Some(layouts) = &field.layouts() {
                 for (_, layout) in &layouts.0 {
                     let mut buffer = "<?php \n".to_string();
                     let mut writer = PhpFileGenerator::new(layout.name(), dest, ow);
                     let indent: isize = 0;
-                    for field in &layout.sub_fields {
+                    for field in layout.sub_fields() {
                         buffer.push_str(&proccess_field(&field, indent));
                     }
                     writer.write_to_file(&buffer);
@@ -65,7 +65,7 @@ fn proccess_field(field: &Field, mut indent: isize) -> String {
 
     buffer.push_str(&start);
 
-    if let Some(fields) = &field.sub_fields {
+    if let Some(fields) = &field.sub_fields() {
         indent += 2;
 
         for field in fields {

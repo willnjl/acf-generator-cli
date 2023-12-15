@@ -36,7 +36,7 @@ impl PhpFileGenerator {
             FieldKind::Repeater => {
                 format!(
                     "{}?> \n\n{}<?\n{}// {}\n{}if (have_rows('{}')) : ?> \n{} <? while (have_rows('{}')) :  the_row(); \n",
-                    outer,outer,outer, field.label,outer ,field.name,inner,field.name,
+                    outer,outer,outer, field.label(),outer ,field.name(),inner,field.name(),
                 )
             }
             _ => String::new(),
@@ -64,7 +64,11 @@ impl PhpFileGenerator {
             FieldKind::Generic => {
                 format!(
                     "{}${} = get_sub_field(\"{}\"); // {} -- {}\n",
-                    indent, field.name, field.name, field.label, field.type_name,
+                    indent,
+                    field.name(),
+                    field.name(),
+                    field.label(),
+                    field.type_name(),
                 )
             }
             _ => String::new(),

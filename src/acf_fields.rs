@@ -1,9 +1,15 @@
-use serde::{Deserialize, Deserializer, Serialize};
-use serde_json::Value;
+use serde::Deserialize;
 use std::collections::HashMap;
+
+/**
+
+
+ Field Group
+
+
+*/
 #[derive(Debug, Deserialize)]
 pub struct FieldGroup {
-    key: String,
     title: String,
     fields: Vec<Field>,
 }
@@ -17,22 +23,25 @@ impl FieldGroup {
     }
 }
 
+/**
+
+
+     Layouts
+
+
+*/
+
 #[derive(Debug, Deserialize)]
 pub struct Layouts(pub HashMap<String, Layout>);
 #[derive(Debug, Deserialize)]
 pub struct Layout {
-    pub key: String,
-    pub name: String,
-    label: String,
-    pub sub_fields: Vec<Field>,
+    name: String,
+    sub_fields: Vec<Field>,
 }
 
 impl Layout {
     pub fn name(&self) -> &str {
         &self.name
-    }
-    pub fn label(&self) -> &str {
-        &self.label
     }
 
     pub fn sub_fields(&self) -> &Vec<Field> {
@@ -40,21 +49,44 @@ impl Layout {
     }
 }
 
+/**
+
+
+    Fields
+
+
+*/
 #[derive(Debug, Deserialize)]
 pub struct Field {
     #[serde(default)]
-    key: String,
-    pub name: String,
-    pub label: String,
+    name: String,
+    label: String,
     #[serde(rename = "type")]
-    pub type_name: String,
-    pub sub_fields: Option<Vec<Field>>,
-    pub layouts: Option<Layouts>,
+    type_name: String,
+    sub_fields: Option<Vec<Field>>,
+    layouts: Option<Layouts>,
 }
 
 impl Field {
     pub fn get_kind(&self) -> FieldKind {
         FieldKind::from_str(&self.type_name)
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn label(&self) -> &str {
+        &self.label
+    }
+    pub fn sub_fields(&self) -> &Option<Vec<Field>> {
+        &self.sub_fields
+    }
+    pub fn layouts(&self) -> &Option<Layouts> {
+        &self.layouts
+    }
+    pub fn type_name(&self) -> &str {
+        &self.type_name
     }
 }
 
