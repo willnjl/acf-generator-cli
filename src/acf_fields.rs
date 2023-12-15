@@ -1,7 +1,7 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
+use serde_json::Value;
 use std::collections::HashMap;
-
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize)]
 pub struct FieldGroup {
     key: String,
     title: String,
@@ -12,69 +12,67 @@ impl FieldGroup {
     pub fn label(&self) -> &str {
         &self.title
     }
-
     pub fn fields(&self) -> &Vec<Field> {
         &self.fields
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-pub struct Field {
-    key: String,
-    name: String,
-    label: String,
-    r#type: String,
-    layouts: Option<HashMap<String, Layout>>,
-    sub_fields: Option<Vec<Field>>,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize)]
+pub struct Layouts(pub HashMap<String, Layout>);
+#[derive(Debug, Deserialize)]
 pub struct Layout {
-    key: String,
-    name: String,
+    pub key: String,
+    pub name: String,
     label: String,
-    sub_fields: Vec<Field>,
+    pub sub_fields: Vec<Field>,
 }
 
 impl Layout {
     pub fn name(&self) -> &str {
         &self.name
     }
+    pub fn label(&self) -> &str {
+        &self.label
+    }
+
     pub fn sub_fields(&self) -> &Vec<Field> {
         &self.sub_fields
     }
 }
 
-pub enum FieldTypes {
-    FlexibleContent,
-    Generic,
-}
-
-impl FieldTypes {
-    pub fn to_str(&self) -> &'static str {
-        match *self {
-            FieldTypes::FlexibleContent => "flexible_content",
-            _ => "generic",
-        }
-    }
+#[derive(Debug, Deserialize)]
+pub struct Field {
+    #[serde(default)]
+    key: String,
+    pub name: String,
+    pub label: String,
+    #[serde(rename = "type")]
+    pub type_name: String,
+    pub sub_fields: Option<Vec<Field>>,
+    pub layouts: Option<Layouts>,
 }
 
 impl Field {
-    pub fn label(&self) -> &str {
-        &self.label
+    pub fn get_kind(&self) -> FieldKind {
+        FieldKind::from_str(&self.type_name)
     }
-    pub fn field_type(&self) -> &str {
-        &self.r#type
-    }
-    pub fn name(&self) -> &str {
-        &self.name
-    }
+}
 
-    pub fn layouts(&self) -> &Option<HashMap<String, Layout>> {
-        &self.layouts
-    }
+#[derive(Debug, Deserialize, PartialEq)]
+pub enum FieldKind {
+    FlexibleContent,
+    Generic,
+    Relationship,
+    Repeater,
+}
 
-    pub fn sub_fields(&self) -> &Option<Vec<Field>> {
-        &self.sub_fields
+impl FieldKind {
+    pub fn from_str(field_type: &str) -> FieldKind {
+        match field_type {
+            "flexible_content" => FieldKind::FlexibleContent,
+            "repeater" => FieldKind::Repeater,
+            "relationship" => FieldKind::Relationship,
+            _ => FieldKind::Generic,
+        }
     }
 }

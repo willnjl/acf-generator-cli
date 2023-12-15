@@ -1,58 +1,82 @@
-// src/php_generator.rs
-
-use crate::acf_fields::Field;
+use crate::acf_fields::{Field, FieldKind};
 use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 
 pub struct PhpFileGenerator {
-    file: File,
+    file: Option<File>,
 }
 
 impl PhpFileGenerator {
-    pub fn new(file_name: &str, dest: &str) -> Option<PhpFileGenerator> {
+    pub fn new(file_name: &str, dest: &str) -> PhpFileGenerator {
         let path = format!("{}/{}.php", dest, file_name);
 
-        let file = OpenOptions::new().create_new(true).write(true).open(path);
-
-        return match file {
-            Ok(file) => {
-                writeln!(&file, "{}", "<?php \n\n").expect("Write Fail");
-                Some(PhpFileGenerator { file })
-            }
-            Err(_e) => None,
+        return match OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .open(path)
+        {
+            Ok(file) => PhpFileGenerator { file: Some(file) },
+            Err(_) => PhpFileGenerator { file: None },
         };
     }
 
-    pub fn start_loop(&mut self) {
-        let mut buff = String::new();
-        buff.push_str("if(have_rows()): ?>\n\n");
-        buff.push_str("\t\t<? while(have_rows()): the_row();  ?>\n\n");
-        buff.push_str("\t\t\t");
-
-        self.write_to_file(&buff.to_string());
+    pub fn template_start(field: &Field, indentation: isize) -> String {
+        let inner = PhpFileGenerator::get_indent(indentation, 1);
+        let outer = PhpFileGenerator::get_indent(indentation, 0);
+        match field.get_kind() {
+            FieldKind::Relationship => String::new(),
+            FieldKind::Repeater => {
+                format!(
+                    "{}?> \n\n{}<?\n{}// {}\n{}if (have_rows('{}')) : ?> \n{} <? while (have_rows('{}')) :  the_row(); \n",
+                    outer,outer,outer, field.label,outer ,field.name,inner,field.name,
+                )
+            }
+            _ => String::new(),
+        }
+    }
+    pub fn template_end(field: &Field, indentation: isize) -> String {
+        let inner = PhpFileGenerator::get_indent(indentation, 0);
+        let outer = PhpFileGenerator::get_indent(indentation, -1);
+        match field.get_kind() {
+            FieldKind::Relationship => String::new(),
+            FieldKind::Repeater => {
+                format!(
+                    "{}?>\n\n{}<? endwhile;\n{}wp_reset_query(); ?> \n{} <? endif;",
+                    inner, inner, inner, outer
+                )
+            }
+            FieldKind::Generic => Self::add_field(field, 0),
+            _ => String::new(),
+        }
     }
 
-    pub fn end_loop(&mut self) {
-        let mut buff = String::new();
-        buff.push_str("\t\t<? endwhile;  ?>\n\n");
-        buff.push_str(" <? endif; wp_reset_query();?>\n\n");
-        self.write_to_file(&buff.to_string());
+    pub fn add_field(field: &Field, indentation: isize) -> String {
+        let indent = PhpFileGenerator::get_indent(indentation, 0);
+        return match field.get_kind() {
+            FieldKind::Generic => {
+                format!(
+                    "{}${} = get_sub_field(\"{}\"); // {} -- {}\n",
+                    indent, field.name, field.name, field.label, field.type_name,
+                )
+            }
+            _ => String::new(),
+        };
     }
 
-    pub fn add_field(&mut self, field: &Field) {
-        let content = format!(
-            "// --- {} - {}\n ${} = get_sub_field(\"{}\"); \n",
-            field.label(),
-            field.field_type(),
-            field.name(),
-            field.name()
-        );
+    fn get_indent(indent: isize, offset: isize) -> String {
+        let n = match indent.wrapping_add(offset) {
+            x if x < 0 => 0,
+            x => x,
+        } as usize;
 
-        self.write_to_file(&content);
+        "\t".to_string().repeat(n)
     }
 
-    fn write_to_file(&mut self, content: &str) {
-        writeln!(self.file, "{}", content).expect("Write Fail");
+    pub fn write_to_file(&mut self, content: &str) {
+        if let Some(file) = &mut self.file {
+            writeln!(file, "{}", content).expect("Write Fail");
+        }
     }
 }

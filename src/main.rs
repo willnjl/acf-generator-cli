@@ -5,6 +5,8 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
+use crate::acf_fields::FieldKind;
+
 mod acf_fields;
 mod php_generator;
 
@@ -37,31 +39,40 @@ fn read_file(path: &str) -> FieldGroup {
 fn process_field_group(group: &FieldGroup, dest: &str) {
     println!("Processing field: {}", group.label());
     for field in group.fields() {
-        process_field_recursive(&field, &dest, &mut None);
-    }
-}
-
-fn process_field_recursive(field: &Field, dest: &str, file: &mut Option<&mut PhpFileGenerator>) {
-    if let Some(sub_fields) = &field.sub_fields() {
-        for sub_field in sub_fields {
-            process_field_recursive(sub_field, dest, file);
-        }
-    }
-
-    if let Some(file) = file {
-        file.add_field(field);
-    }
-
-    if let Some(layouts) = &field.layouts() {
-        for (key, layout) in layouts {
-            println!("Processing layout with key: {}", layout.name());
-            if let Some(mut file) = PhpFileGenerator::new(layout.name(), dest) {
-                for layout_field in layout.sub_fields() {
-                    process_field_recursive(layout_field, dest, &mut Some(&mut file));
+        if (field.get_kind() == FieldKind::FlexibleContent) {
+            if let Some(layouts) = &field.layouts {
+                for (key, layout) in &layouts.0 {
+                    let mut buffer = "<?php \n".to_string();
+                    let mut writer = PhpFileGenerator::new(layout.name(), "./output");
+                    let indent: isize = 0;
+                    for field in &layout.sub_fields {
+                        buffer.push_str(&proccess_field(&field, indent));
+                    }
+                    writer.write_to_file(&buffer);
                 }
             }
         }
     }
+}
+
+fn proccess_field(field: &Field, mut indent: isize) -> String {
+    let mut buffer = String::new();
+
+    let start = PhpFileGenerator::template_start(field, indent);
+
+    buffer.push_str(&start);
+
+    if let Some(fields) = &field.sub_fields {
+        indent += 2;
+
+        for field in fields {
+            buffer.push_str(&PhpFileGenerator::add_field(field, indent + 1));
+        }
+    }
+
+    let end = PhpFileGenerator::template_end(field, indent);
+    buffer.push_str(&end);
+    buffer
 }
 
 fn main() {
