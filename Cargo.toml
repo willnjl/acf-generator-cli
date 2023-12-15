@@ -3,8 +3,6 @@ name = "acf-cli"
 version = "0.1.0"
 edition = "2021"
 
-
-
 [dev-dependencies]
 cargo-watch = "8.4.1"
 
@@ -25,7 +23,3 @@ serde_json = "1.0.108"
 [[bin]]
 name = "acf-cli"
 path = "src/main.rs"
-
-
-[scripts]
-watch = "cargo run -- --src ./data.json --dest ./output -o"
