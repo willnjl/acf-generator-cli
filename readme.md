@@ -8,9 +8,7 @@ The ACF Field Generator CLI is a Rust-based command-line tool designed to expedi
 
 - **JSON to PHP Conversion:** Converts ACF field configurations stored in JSON format into corresponding wordpress boilerplate.
   
-- **Customizable Output:** Allows users to specify output preferences, such as the file name, directory, and other relevant options.
-
-- **Time Savings:** Automates the generation of PHP boilerplate code, saving developers significant time and effort.
+- **Automatic Flex Content Layouts** Create the template parts for your layouts with all the fieldsin the right place.
 
 ### Options
 
@@ -26,11 +24,11 @@ The ACF Field Generator CLI is a Rust-based command-line tool designed to expedi
 
 
 1. clone repository
-    `git clone git@github.com:willnjl/flex-gen-acf.git`
+    `git clone git@github.com:willnjl/acf-layout-gen.git`
 2. install executable (Unix)
-    `cargo build && sudo cp target/debug/flex-gen-acf /usr/local/bin`
+    `cargo build && sudo cp target/debug/acf-layout-gen /usr/local/bin`
 3. Run your Rust CLI app from anywhere on your machine.
-   `flex-gen-acf`
+   `acf-layout-gen`
 
 ### Development
 ```shell 
