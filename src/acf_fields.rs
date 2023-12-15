@@ -47,6 +47,10 @@ impl Layout {
     pub fn sub_fields(&self) -> &Vec<Field> {
         &self.sub_fields
     }
+
+    pub fn get_path(&self, field: &Field, dest: &str) -> String {
+        format!("{}/{}/{}.php", dest, field.name(), self.name)
+    }
 }
 
 /**

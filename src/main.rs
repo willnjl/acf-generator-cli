@@ -46,7 +46,8 @@ fn process_field_group(group: &FieldGroup, dest: &str, ow: bool) {
             if let Some(layouts) = &field.layouts() {
                 for (_, layout) in &layouts.0 {
                     let mut buffer = "<?php \n".to_string();
-                    let mut writer = PhpFileGenerator::new(layout.name(), dest, ow);
+                    let path = layout.get_path(field, dest);
+                    let mut writer = PhpFileGenerator::new(&path, ow);
                     let indent: isize = 0;
                     for field in layout.sub_fields() {
                         buffer.push_str(&proccess_field(&field, indent));

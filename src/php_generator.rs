@@ -1,5 +1,5 @@
 use crate::acf_fields::{Field, FieldKind};
-use std::fs::{File, OpenOptions};
+use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
 
 pub struct PhpFileGenerator {
@@ -7,15 +7,16 @@ pub struct PhpFileGenerator {
 }
 
 impl PhpFileGenerator {
-    pub fn new(file_name: &str, dest: &str, overwrite: bool) -> PhpFileGenerator {
-        let path = format!("{}/{}.php", dest, file_name);
+    pub fn new(path: &str, overwrite: bool) -> PhpFileGenerator {
+        // Create the directory structure if it doesn't exist
+        create_dir_all(std::path::Path::new(path).parent().unwrap());
 
         if overwrite {
             return match OpenOptions::new()
                 .create(true)
                 .write(true)
                 .truncate(true)
-                .open(path)
+                .open(&path)
             {
                 Ok(file) => PhpFileGenerator { file: Some(file) },
                 Err(_) => PhpFileGenerator { file: None },
