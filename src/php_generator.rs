@@ -1,7 +1,6 @@
 use crate::acf_fields::{Field, FieldKind};
 use std::fs::{File, OpenOptions};
 use std::io::Write;
-use std::path::Path;
 
 pub struct PhpFileGenerator {
     file: Option<File>,
@@ -11,7 +10,7 @@ impl PhpFileGenerator {
     pub fn new(file_name: &str, dest: &str, overwrite: bool) -> PhpFileGenerator {
         let path = format!("{}/{}.php", dest, file_name);
 
-        if (overwrite) {
+        if overwrite {
             return match OpenOptions::new()
                 .create(true)
                 .write(true)
