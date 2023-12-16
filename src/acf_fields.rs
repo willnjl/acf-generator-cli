@@ -1,6 +1,13 @@
 use serde::Deserialize;
 use std::collections::HashMap;
 
+use crate::cli_output::{self};
+use crate::file_gen::FileGen;
+use colored::Colorize;
+use std::fs::File;
+use std::io::Read;
+use std::path::Path;
+
 /**
 
 
@@ -111,4 +118,66 @@ impl FieldKind {
             _ => FieldKind::Generic,
         }
     }
+}
+
+pub fn process_field_group(group: &FieldGroup, dest: &str, ow: bool) {
+    for field in group.fields() {
+        if field.get_kind() == FieldKind::FlexibleContent {
+            if let Some(layouts) = &field.layouts() {
+                for (_, layout) in &layouts.0 {
+                    let mut buffer = "<?php \n".to_string();
+                    let path = layout.get_path(field, dest);
+                    let mut writer = FileGen::new(&path, ow);
+                    let indent: isize = 0;
+                    for field in layout.sub_fields() {
+                        buffer.push_str(&proccess_field(&field, indent));
+                    }
+                    writer.write_to_file(&buffer);
+                }
+            }
+        }
+    }
+}
+
+pub fn proccess_field(field: &Field, mut indent: isize) -> String {
+    let mut buffer = String::new();
+
+    let start = FileGen::template_start(field, indent);
+
+    buffer.push_str(&start);
+
+    if let Some(fields) = &field.sub_fields() {
+        indent += 2;
+
+        for field in fields {
+            buffer.push_str(&FileGen::add_field(field, indent + 1));
+        }
+    }
+
+    let end = FileGen::template_end(field, indent);
+    buffer.push_str(&end);
+    buffer
+}
+
+/**
+ * open src file and turn it into a string
+ */
+pub fn read_file(path: &str) -> FieldGroup {
+    cli_output::running_task_feedback("Opening file...");
+    let file_result = File::open(Path::new(path));
+
+    let mut file = match file_result {
+        Ok(file) => file,
+        Err(_) => {
+            cli_output::exit_with_error(&format!("Unable to open file '{}'", path.yellow()));
+            unreachable!();
+        }
+    };
+
+    let mut buffer = String::new();
+    file.read_to_string(&mut buffer).unwrap();
+
+    let data: FieldGroup = serde_json::from_str(&buffer).unwrap();
+
+    data
 }
