@@ -1,15 +1,15 @@
-use crate::acf_fields::FieldKind;
-use acf_fields::{Field, FieldGroup};
 use clap::Parser;
 use colored::Colorize;
-use php_generator::PhpFileGenerator;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
 mod acf_fields;
 mod cli_output;
-mod php_generator;
+mod file_gen;
+
+use acf_fields::{Field, FieldGroup, FieldKind};
+use file_gen::FileGen;
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
@@ -57,7 +57,7 @@ fn process_field_group(group: &FieldGroup, dest: &str, ow: bool) {
                 for (_, layout) in &layouts.0 {
                     let mut buffer = "<?php \n".to_string();
                     let path = layout.get_path(field, dest);
-                    let mut writer = PhpFileGenerator::new(&path, ow);
+                    let mut writer = FileGen::new(&path, ow);
                     let indent: isize = 0;
                     for field in layout.sub_fields() {
                         buffer.push_str(&proccess_field(&field, indent));
@@ -72,7 +72,7 @@ fn process_field_group(group: &FieldGroup, dest: &str, ow: bool) {
 fn proccess_field(field: &Field, mut indent: isize) -> String {
     let mut buffer = String::new();
 
-    let start = PhpFileGenerator::template_start(field, indent);
+    let start = FileGen::template_start(field, indent);
 
     buffer.push_str(&start);
 
@@ -80,11 +80,11 @@ fn proccess_field(field: &Field, mut indent: isize) -> String {
         indent += 2;
 
         for field in fields {
-            buffer.push_str(&PhpFileGenerator::add_field(field, indent + 1));
+            buffer.push_str(&FileGen::add_field(field, indent + 1));
         }
     }
 
-    let end = PhpFileGenerator::template_end(field, indent);
+    let end = FileGen::template_end(field, indent);
     buffer.push_str(&end);
     buffer
 }

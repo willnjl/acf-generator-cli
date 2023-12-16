@@ -1,16 +1,15 @@
-use colored::Colorize;
-
 use crate::acf_fields::{Field, FieldKind};
 use crate::cli_output;
+use colored::Colorize;
 use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::{self, Write};
 
-pub struct PhpFileGenerator {
+pub struct FileGen {
     file: Option<File>,
 }
 
-impl PhpFileGenerator {
-    pub fn new(path: &str, overwrite: bool) -> PhpFileGenerator {
+impl FileGen {
+    pub fn new(path: &str, overwrite: bool) -> FileGen {
         let _ = create_dir_all(std::path::Path::new(path).parent().unwrap()); // Create the directory structure if it doesn't exist
 
         if overwrite {
@@ -22,7 +21,7 @@ impl PhpFileGenerator {
             {
                 Ok(file) => {
                     cli_output::file_created_feedback(&format!("{}", path.yellow(),));
-                    PhpFileGenerator { file: Some(file) }
+                    FileGen { file: Some(file) }
                 }
                 Err(e) => {
                     cli_output::exit_with_error(&format!(
@@ -30,7 +29,7 @@ impl PhpFileGenerator {
                         "Error creating ",
                         &path.yellow()
                     ));
-                    PhpFileGenerator { file: None }
+                    FileGen { file: None }
                 }
             };
         };
@@ -38,11 +37,11 @@ impl PhpFileGenerator {
         return match OpenOptions::new().create_new(true).write(true).open(path) {
             Ok(file) => {
                 cli_output::file_created_feedback(&format!("{}", path.yellow(),));
-                PhpFileGenerator { file: Some(file) }
+                FileGen { file: Some(file) }
             }
             Err(e) => {
                 Self::file_creation_error_handler(&path, e);
-                PhpFileGenerator { file: None }
+                FileGen { file: None }
             }
         };
     }
