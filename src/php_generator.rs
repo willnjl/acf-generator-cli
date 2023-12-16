@@ -1,6 +1,9 @@
+use colored::Colorize;
+
 use crate::acf_fields::{Field, FieldKind};
+use crate::cli_output;
 use std::fs::{create_dir_all, File, OpenOptions};
-use std::io::Write;
+use std::io::{self, Write};
 
 pub struct PhpFileGenerator {
     file: Option<File>,
@@ -8,8 +11,7 @@ pub struct PhpFileGenerator {
 
 impl PhpFileGenerator {
     pub fn new(path: &str, overwrite: bool) -> PhpFileGenerator {
-        // Create the directory structure if it doesn't exist
-        create_dir_all(std::path::Path::new(path).parent().unwrap());
+        let _ = create_dir_all(std::path::Path::new(path).parent().unwrap()); // Create the directory structure if it doesn't exist
 
         if overwrite {
             return match OpenOptions::new()
@@ -18,14 +20,30 @@ impl PhpFileGenerator {
                 .truncate(true)
                 .open(&path)
             {
-                Ok(file) => PhpFileGenerator { file: Some(file) },
-                Err(_) => PhpFileGenerator { file: None },
+                Ok(file) => {
+                    cli_output::file_created_feedback(&format!("{}", path.yellow(),));
+                    PhpFileGenerator { file: Some(file) }
+                }
+                Err(e) => {
+                    cli_output::exit_with_error(&format!(
+                        "{} {}",
+                        "Error creating ",
+                        &path.yellow()
+                    ));
+                    PhpFileGenerator { file: None }
+                }
             };
         };
 
         return match OpenOptions::new().create_new(true).write(true).open(path) {
-            Ok(file) => PhpFileGenerator { file: Some(file) },
-            Err(_) => PhpFileGenerator { file: None },
+            Ok(file) => {
+                cli_output::file_created_feedback(&format!("{}", path.yellow(),));
+                PhpFileGenerator { file: Some(file) }
+            }
+            Err(e) => {
+                Self::file_creation_error_handler(&path, e);
+                PhpFileGenerator { file: None }
+            }
         };
     }
 
@@ -89,5 +107,14 @@ impl PhpFileGenerator {
         if let Some(file) = &mut self.file {
             writeln!(file, "{}", content).expect("Write Fail");
         }
+    }
+
+    fn file_creation_error_handler(path: &str, e: io::Error) {
+        match e.kind() {
+            io::ErrorKind::AlreadyExists => {
+                cli_output::file_exists_feedback(&format!("{} ... leaving", path.yellow()));
+            }
+            _ => {}
+        };
     }
 }

@@ -1,13 +1,14 @@
+use crate::acf_fields::FieldKind;
 use acf_fields::{Field, FieldGroup};
 use clap::Parser;
+use colored::Colorize;
 use php_generator::PhpFileGenerator;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
-use crate::acf_fields::FieldKind;
-
 mod acf_fields;
+mod cli_output;
 mod php_generator;
 
 /// Simple program to greet a person
@@ -30,7 +31,17 @@ struct Args {
  * open src file and turn it into a string
  */
 fn read_file(path: &str) -> FieldGroup {
-    let mut file = File::open(Path::new(path)).expect("Unable to load file");
+    cli_output::running_task_feedback("Opening file...");
+    let file_result = File::open(Path::new(path));
+
+    let mut file = match file_result {
+        Ok(file) => file,
+        Err(_) => {
+            cli_output::exit_with_error(&format!("Unable to open file '{}'", path.yellow()));
+            unreachable!();
+        }
+    };
+
     let mut buffer = String::new();
     file.read_to_string(&mut buffer).unwrap();
 
@@ -40,7 +51,6 @@ fn read_file(path: &str) -> FieldGroup {
 }
 
 fn process_field_group(group: &FieldGroup, dest: &str, ow: bool) {
-    println!("Processing field: {}", group.label());
     for field in group.fields() {
         if field.get_kind() == FieldKind::FlexibleContent {
             if let Some(layouts) = &field.layouts() {
