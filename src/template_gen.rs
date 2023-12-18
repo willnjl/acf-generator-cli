@@ -1,7 +1,4 @@
 use crate::acf::{Field, FieldKind};
-use crate::cli_output;
-use colored::Colorize;
-use std::io;
 
 pub fn template_start(field: &Field, indentation: isize) -> String {
     let inner = get_indent(indentation, 1);

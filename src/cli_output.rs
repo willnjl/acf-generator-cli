@@ -12,6 +12,3 @@ pub fn running_task_feedback(msg: &str) {
 pub fn file_created_feedback(msg: &str) {
     eprintln!("{} {}", "[CREATED]".green(), msg);
 }
-pub fn file_exists_feedback(msg: &str) {
-    eprintln!("{} {}", "[EXISTS]".blue(), msg);
-}
