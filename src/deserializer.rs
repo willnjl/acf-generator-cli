@@ -1,4 +1,4 @@
-use crate::acf::{Field, FieldGroup};
+use crate::acf::FieldGroup;
 use crate::cli_output::{self};
 use colored::Colorize;
 use std::fs::File;

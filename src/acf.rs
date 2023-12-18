@@ -1,7 +1,8 @@
 use serde::Deserialize;
 use std::collections::HashMap;
 
-use crate::file_gen::FileGen;
+use crate::error::ALGError;
+use crate::file_service::FileService;
 use crate::template_gen;
 
 /**
@@ -108,23 +109,24 @@ impl FieldKind {
     }
 }
 
-pub fn process_group(group: &FieldGroup, dest: &str, ow: bool) {
+pub fn process_group(group: &FieldGroup, dest: &str, ow: bool) -> Result<(), ALGError> {
     for field in group.fields() {
         if field.get_kind() == FieldKind::FlexibleContent {
             if let Some(layouts) = &field.layouts() {
                 for (_, layout) in &layouts.0 {
                     let mut buffer = "<?php \n".to_string();
                     let path = layout.get_path(field, dest);
-                    let mut writer: FileGen = FileGen::new(&path, ow);
+                    let mut writer: FileService = FileService::new(&path, ow)?;
                     let indent: isize = 0;
                     for field in layout.sub_fields() {
                         buffer.push_str(&proccess_field(&field, indent));
                     }
-                    writer.write_to_file(&buffer);
+                    writer.write(&buffer);
                 }
             }
         }
     }
+    Ok(())
 }
 
 pub fn proccess_field(field: &Field, mut indent: isize) -> String {

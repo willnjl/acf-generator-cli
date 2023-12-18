@@ -3,7 +3,7 @@ mod cli_args;
 mod cli_output;
 mod deserializer;
 mod error;
-mod file_gen;
+mod file_service;
 mod template_gen;
 
 use clap::Parser;

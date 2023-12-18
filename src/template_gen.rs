@@ -58,12 +58,3 @@ fn get_indent(indent: isize, offset: isize) -> String {
 
     "\t".to_string().repeat(n)
 }
-
-fn file_creation_error_handler(path: &str, e: io::Error) {
-    match e.kind() {
-        io::ErrorKind::AlreadyExists => {
-            cli_output::file_exists_feedback(&format!("{} ...", path.yellow()));
-        }
-        _ => {}
-    };
-}
