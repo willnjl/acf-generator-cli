@@ -7,10 +7,17 @@ mod file_service;
 mod template_gen;
 
 use clap::Parser;
+use cli_output::cli_output::exit_with_error;
 
 fn main() {
     let args = cli_args::Args::parse();
-    let json_string = deserializer::read_file(&args.src);
 
-    let _ = acf::process_group(&json_string, &args.dest, args.overwrite);
+    match deserializer::read_file(&args.src) {
+        Ok(json) => {
+            acf::process_group(&json, &args.dest, args.overwrite);
+        }
+        Err(e) => {
+            exit_with_error(e);
+        }
+    }
 }

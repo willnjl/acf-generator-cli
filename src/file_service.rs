@@ -1,6 +1,5 @@
-use crate::cli_output;
+use crate::cli_output::cli_output;
 use crate::error::ALGError;
-use colored::Colorize;
 use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
 
@@ -22,6 +21,7 @@ impl FileService {
 
     fn open(path: &str, ow: bool) -> Result<FileService, ALGError> {
         if ow {
+            // overwite
             return match OpenOptions::new()
                 .create(true)
                 .write(true)
@@ -33,12 +33,16 @@ impl FileService {
             };
         };
 
+        // skip existing files
         return match OpenOptions::new().create_new(true).write(true).open(path) {
             Ok(file) => {
-                cli_output::file_created_feedback(&format!("{}", path.yellow(),));
+                cli_output::create(&format!("layout {}", path));
                 Ok(FileService { file: Some(file) })
             }
-            Err(e) => Err(ALGError::IoError(e)),
+            Err(e) => {
+                cli_output::info(&ALGError::FileAlreadyExists(path.to_string()).to_string());
+                Ok(FileService { file: None })
+            }
         };
     }
 }
