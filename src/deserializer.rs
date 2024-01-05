@@ -9,7 +9,7 @@ use std::path::Path;
  * open src file and turn it into a string
  */
 pub fn read_file(path: &str) -> Result<FieldGroup, ALGError> {
-    cli_output::info("Opening file...");
+    cli_output::info("Opening file... \n");
 
     let mut f = match File::open(Path::new(path)) {
         Ok(file) => file,
