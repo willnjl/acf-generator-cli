@@ -43,7 +43,7 @@ impl FileService {
                 Ok(FileService { file: Some(file) })
             }
             Err(_) => {
-                cli_output::info(&ALGError::FileAlreadyExists(path.to_string()).to_string());
+                cli_output::warn(&ALGError::FileAlreadyExists(path.to_string()).to_string());
                 Ok(FileService { file: None })
             }
         };
