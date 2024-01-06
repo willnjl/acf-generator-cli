@@ -33,12 +33,12 @@ pub fn generate(args: &cli::args::Args) -> Result<(), ALGError> {
 fn match_to_type(args: &cli::args::Args, json: Result<AcfJsonKind, ALGError>) {
     return match json {
         Ok(json) => match json {
-            AcfJsonKind::FieldGroup(field_group_json) => {
-                acf::field_group::generate(&field_group_json, &args.dest, args.overwrite);
+            AcfJsonKind::FieldGroup(field_group) => {
+                acf::field_group::generate(&field_group, &args.dest, args.overwrite);
             }
-            AcfJsonKind::PostType(post_type_json) => {
+            AcfJsonKind::PostType(post_type) => {
                 cli::output::warn("post type file");
-                acf::post_type::generate(post_type_json);
+                acf::post_type::generate(&post_type, &args.dest, args.overwrite);
             }
         },
         Err(e) => {
