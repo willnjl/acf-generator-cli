@@ -15,7 +15,7 @@ impl FileService {
 
     pub fn write(&mut self, content: &str) {
         if let Some(file) = &mut self.file {
-            // writeln!(file, "{}", content).expect("Write Fail");
+            writeln!(file, "{}", content).expect("Write Fail");
         }
     }
 
