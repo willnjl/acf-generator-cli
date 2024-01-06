@@ -48,11 +48,11 @@ The ACF Field Generator CLI is at tool for generating boilerplate PHP templates 
 3.  Run your Rust CLI app from anywhere on your machine.
 
 ```shell
-   acf-layout-gen --src inc/acf-json/group_654b6e4a8a06e.json --dest template-parts/blocks 
+   acf-layout-gen --src inc/acf-json/group_654b6e4a8a06e.json --dest ./wp-content/themes/wordpress-theme
 ```
 
 ### Development
 ```shell 
-cargo watch -s 'cargo run -- --src ./data.json --dest ./blocks -o
+cargo watch -s 'cargo run -- --src "json/*.json" --dest ./output -o'
 ```  
 
