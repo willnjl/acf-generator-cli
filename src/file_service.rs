@@ -39,7 +39,7 @@ impl FileService {
                 cli_output::create(&format!("layout {}", path));
                 Ok(FileService { file: Some(file) })
             }
-            Err(e) => {
+            Err(_) => {
                 cli_output::info(&ALGError::FileAlreadyExists(path.to_string()).to_string());
                 Ok(FileService { file: None })
             }

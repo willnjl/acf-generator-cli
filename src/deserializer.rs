@@ -3,7 +3,7 @@ use crate::cli_output::cli_output;
 use crate::error::ALGError;
 
 use std::fs::File;
-use std::io::{Error, Read};
+use std::io::Read;
 use std::path::Path;
 
 /**

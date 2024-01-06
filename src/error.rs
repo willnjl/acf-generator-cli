@@ -5,7 +5,6 @@ use std::fmt::{Display, Result};
 pub enum ALGError {
     FileNotFound(String),
     InvalidJson(serde_json::Error),
-    InvalidFile,
     FileAlreadyExists(String),
     IoError(std::io::Error),
     GlobError(PatternError),
