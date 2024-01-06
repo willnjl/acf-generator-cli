@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::collections::HashMap;
 
-use crate::acf::Field;
+use crate::acf::field::Field;
 
 #[derive(Debug, Deserialize)]
 pub struct Layouts(pub HashMap<String, Layout>);

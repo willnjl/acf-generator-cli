@@ -22,7 +22,7 @@ fn process_files(args: &cli::args::Args) -> Result<(), ALGError> {
                 if let Some(path) = pathbuf.to_str() {
                     match utils::deserializer::read_file(&path) {
                         Ok(json) => {
-                            acf::process_group(&json, &args.dest, args.overwrite)?;
+                            acf::field_group::process(&json, &args.dest, args.overwrite)?;
                         }
                         Err(e) => {
                             cli::output::exit_with_error(e);
