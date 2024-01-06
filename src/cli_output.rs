@@ -16,7 +16,7 @@ pub mod cli_output {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             match self {
                 CustomError::WriteError(e) => {
-                    write!(f, "Error writing to the command line: {}", e)
+                    writeln!(f, "Error writing to the command line: {}", e)
                 }
             }
         }
