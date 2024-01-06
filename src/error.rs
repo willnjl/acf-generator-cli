@@ -16,7 +16,7 @@ impl Display for ALGError {
             ALGError::FileNotFound(path) => writeln!(f, "{} - {}", "File not found", path),
             ALGError::InvalidJson(e) => writeln!(f, "{} - {}", "Invalid Json!", e),
             ALGError::FileAlreadyExists(path) => writeln!(f, "{} - {}", "File Exists", path),
-            _ => write!(f, "{}", "Somthing went wrong"),
+            _ => writeln!(f, "{}", "Somthing went wrong"),
         }
     }
 }
