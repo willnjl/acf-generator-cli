@@ -1,4 +1,4 @@
-use crate::acf::FieldGroup;
+use crate::acf::field_group::FieldGroup;
 use crate::cli_output::cli_output;
 use crate::error::ALGError;
 

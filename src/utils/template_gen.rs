@@ -1,4 +1,5 @@
-use crate::acf::{Field, FieldKind};
+use crate::acf::field::Field;
+use crate::acf::field::FieldKind;
 
 pub fn template_start(field: &Field, indentation: isize) -> String {
     let inner = get_indent(indentation, 1);

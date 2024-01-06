@@ -1,10 +1,8 @@
 mod acf;
 mod cli_args;
 mod cli_output;
-mod deserializer;
 mod error;
-mod file_service;
-mod template_gen;
+mod utils;
 
 use clap::Parser;
 use cli_output::cli_output::exit_with_error;
@@ -24,7 +22,7 @@ fn process_files(args: &cli_args::Args) -> Result<(), ALGError> {
         match entry {
             Ok(pathbuf) => {
                 if let Some(path) = pathbuf.to_str() {
-                    match deserializer::read_file(&path) {
+                    match utils::deserializer::read_file(&path) {
                         Ok(json) => {
                             acf::process_group(&json, &args.dest, args.overwrite)?;
                         }
