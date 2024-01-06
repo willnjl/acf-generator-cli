@@ -15,7 +15,7 @@ impl FileService {
 
     pub fn write(&mut self, content: &str) {
         if let Some(file) = &mut self.file {
-            writeln!(file, "{}", content).expect("Write Fail");
+            // writeln!(file, "{}", content).expect("Write Fail");
         }
     }
 
@@ -28,7 +28,10 @@ impl FileService {
                 .truncate(true)
                 .open(&path)
             {
-                Ok(file) => Ok(FileService { file: Some(file) }),
+                Ok(file) => {
+                    cli_output::create(&format!("layout {} created!", path));
+                    Ok(FileService { file: Some(file) })
+                }
                 Err(e) => Err(ALGError::IoError(e)),
             };
         };

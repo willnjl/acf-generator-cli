@@ -13,10 +13,10 @@ pub enum ALGError {
 impl Display for ALGError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result {
         match self {
-            ALGError::FileNotFound(path) => writeln!(f, "{} - {}", "File not found", path),
-            ALGError::InvalidJson(e) => writeln!(f, "{} - {}", "Invalid Json!", e),
-            ALGError::FileAlreadyExists(path) => writeln!(f, "{} - {}", "File Exists", path),
-            _ => writeln!(f, "{}", "Somthing went wrong"),
+            ALGError::FileNotFound(path) => write!(f, "{} - {}", "File not found", path),
+            ALGError::InvalidJson(e) => write!(f, "{} - {}", "Invalid Json!", e),
+            ALGError::FileAlreadyExists(path) => write!(f, "{} - {}", "File Exists", path),
+            _ => write!(f, "{}", "Somthing went wrong"),
         }
     }
 }
