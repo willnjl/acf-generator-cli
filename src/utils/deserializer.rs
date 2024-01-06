@@ -1,4 +1,3 @@
-use crate::acf::field_group::FieldGroup;
 use crate::cli;
 use crate::error::ALGError;
 
@@ -6,10 +5,12 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
+use crate::acf::AcfJson;
+
 /**
  * open src file and turn it into a string
  */
-pub fn read_file(path: &str) -> Result<FieldGroup, ALGError> {
+pub fn read_file(path: &str) -> Result<AcfJson, ALGError> {
     cli::output::info("Opening file...");
 
     let mut f = match File::open(Path::new(path)) {
@@ -23,8 +24,7 @@ pub fn read_file(path: &str) -> Result<FieldGroup, ALGError> {
         return Err(ALGError::IoError(err));
     }
 
-    let data: Result<FieldGroup, ALGError> =
-        serde_json::from_str(&s).map_err(ALGError::InvalidJson);
+    let data: Result<AcfJson, ALGError> = serde_json::from_str(&s).map_err(ALGError::InvalidJson);
 
     data
 }
