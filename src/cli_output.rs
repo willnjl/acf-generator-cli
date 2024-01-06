@@ -35,19 +35,19 @@ pub mod cli_output {
         std::process::exit(1);
     }
 
-    pub fn warn(msg: &str) {
-        write_to_cli(format!("{} {}", "[WARN]".yellow(), msg));
+    pub fn warn(msg: &str) -> () {
+        let _ = write_to_cli(format!("{} {}", "[WARN]".yellow(), msg));
     }
 
-    pub fn error(msg: &str) {
-        write_to_cli(format!("{} {}", "[ERROR]".red(), msg));
+    pub fn error(msg: &str) -> () {
+        let _ = write_to_cli(format!("{} {}", "[ERROR]".red(), msg));
     }
 
-    pub fn info(msg: &str) {
-        write_to_cli(format!("{} {}", "[INFO]".blue(), msg));
+    pub fn info(msg: &str) -> () {
+        let _ = write_to_cli(format!("{} {}", "[INFO]".blue(), msg));
     }
 
-    pub fn create(msg: &str) {
-        write_to_cli(format!("{} {}", "[CREATE]".green(), msg));
+    pub fn create(msg: &str) -> () {
+        let _ = write_to_cli(format!("{} {}", "[CREATE]".green(), msg));
     }
 }
