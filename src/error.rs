@@ -1,12 +1,14 @@
+use glob::PatternError;
 use std::fmt::{Display, Result};
 
 #[derive(Debug)]
 pub enum ALGError {
     FileNotFound(String),
     InvalidJson(serde_json::Error),
-    InvalidFie,
+    InvalidFile,
     FileAlreadyExists(String),
     IoError(std::io::Error),
+    GlobError(PatternError),
 }
 
 impl Display for ALGError {

@@ -1,6 +1,7 @@
 use crate::acf::FieldGroup;
 use crate::cli_output::cli_output;
 use crate::error::ALGError;
+
 use std::fs::File;
 use std::io::{Error, Read};
 use std::path::Path;
@@ -9,7 +10,7 @@ use std::path::Path;
  * open src file and turn it into a string
  */
 pub fn read_file(path: &str) -> Result<FieldGroup, ALGError> {
-    cli_output::info("Opening file... \n");
+    cli_output::info("Opening file...");
 
     let mut f = match File::open(Path::new(path)) {
         Ok(file) => file,

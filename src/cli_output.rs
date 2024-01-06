@@ -24,7 +24,7 @@ pub mod cli_output {
 
     // Function to write a message to the command line
     pub fn write_to_cli(message: String) -> Result<(), CustomError> {
-        match write!(io::stdout(), "{}", message) {
+        match writeln!(io::stdout(), "{}", message) {
             Ok(_) => Ok(()),
             Err(e) => Err(CustomError::WriteError(e)),
         }
