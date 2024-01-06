@@ -8,7 +8,7 @@ use clap::Parser;
 fn main() {
     let args = cli::args::Args::parse();
 
-    if let Err(e) = acf::process(&args) {
+    if let Err(e) = acf::generate(&args) {
         cli::output::exit_with_error(e);
     }
 }

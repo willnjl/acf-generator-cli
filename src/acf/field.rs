@@ -1,7 +1,6 @@
 use serde::Deserialize;
 
 use crate::acf::layouts::Layouts;
-use crate::utils::template_gen;
 
 #[derive(Debug, Deserialize)]
 pub struct Field {
@@ -35,6 +34,84 @@ impl Field {
     pub fn type_name(&self) -> &str {
         &self.type_name
     }
+
+    pub fn generate(field: &Field, mut indent: isize) -> String {
+        let mut buffer = String::new();
+
+        let start = field.template_start(indent);
+
+        buffer.push_str(&start);
+
+        if let Some(fields) = &field.sub_fields() {
+            indent += 2;
+
+            for field in fields {
+                buffer.push_str(&field.add_field(indent + 1));
+            }
+        }
+
+        let end = field.template_end(indent);
+        buffer.push_str(&end);
+
+        buffer
+    }
+
+    fn template_start(&self, indentation: isize) -> String {
+        let inner = Field::get_indent(indentation, 1);
+        let outer = Field::get_indent(indentation, 0);
+        match self.get_kind() {
+            FieldKind::Relationship => String::new(),
+            FieldKind::Repeater => {
+                format!(
+                    "{}?> \n\n{}<?\n{}// {}\n{}if (have_rows('{}')) : ?> \n{} <? while (have_rows('{}')) :  the_row(); \n",
+                    outer,outer,outer, self.label(),outer ,self.name(),inner,self.name(),
+                )
+            }
+            _ => String::new(),
+        }
+    }
+
+    fn template_end(&self, indentation: isize) -> String {
+        let inner = Field::get_indent(indentation, 0);
+        let outer = Field::get_indent(indentation, -1);
+        match self.get_kind() {
+            FieldKind::Relationship => String::new(),
+            FieldKind::Repeater => {
+                format!(
+                    "{}?>\n\n{}<? endwhile;\n{}wp_reset_query(); ?> \n{} <? endif;",
+                    inner, inner, inner, outer
+                )
+            }
+            FieldKind::Generic => Field::add_field(self, 0),
+            _ => String::new(),
+        }
+    }
+
+    fn add_field(&self, indentation: isize) -> String {
+        let indent = Field::get_indent(indentation, 0);
+        return match self.get_kind() {
+            FieldKind::Generic => {
+                format!(
+                    "{}${} = get_sub_field(\"{}\"); // {} -- {}\n",
+                    indent,
+                    self.name(),
+                    self.name(),
+                    self.label(),
+                    self.type_name(),
+                )
+            }
+            _ => String::new(),
+        };
+    }
+
+    fn get_indent(indent: isize, offset: isize) -> String {
+        let n = match indent.wrapping_add(offset) {
+            x if x < 0 => 0,
+            x => x,
+        } as usize;
+
+        "\t".to_string().repeat(n)
+    }
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -54,25 +131,4 @@ impl FieldKind {
             _ => FieldKind::Generic,
         }
     }
-}
-
-pub fn proccess(field: &Field, mut indent: isize) -> String {
-    let mut buffer = String::new();
-
-    let start = template_gen::template_start(field, indent);
-
-    buffer.push_str(&start);
-
-    if let Some(fields) = &field.sub_fields() {
-        indent += 2;
-
-        for field in fields {
-            buffer.push_str(&template_gen::add_field(field, indent + 1));
-        }
-    }
-
-    let end = template_gen::template_end(field, indent);
-    buffer.push_str(&end);
-
-    buffer
 }

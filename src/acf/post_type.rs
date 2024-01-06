@@ -6,4 +6,4 @@ pub struct PostType {
     title: String,
 }
 
-pub fn proccess() -> () {}
+pub fn generate(json: PostType) -> () {}

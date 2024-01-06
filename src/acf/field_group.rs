@@ -14,7 +14,7 @@ impl FieldGroup {
     }
 }
 
-pub fn process(group: &FieldGroup, dest: &str, ow: bool) -> Result<(), ALGError> {
+pub fn generate(group: &FieldGroup, dest: &str, ow: bool) -> Result<(), ALGError> {
     for field in group.fields() {
         if field.get_kind() == FieldKind::FlexibleContent {
             if let Some(layouts) = &field.layouts() {
@@ -24,7 +24,7 @@ pub fn process(group: &FieldGroup, dest: &str, ow: bool) -> Result<(), ALGError>
                     let mut writer: FileService = FileService::new(&path, ow)?;
                     let indent: isize = 0;
                     for field in layout.sub_fields() {
-                        buffer.push_str(&proccess(&field, indent));
+                        buffer.push_str(&Field::generate(&field, indent));
                     }
                     writer.write(&buffer);
                 }

@@ -15,7 +15,7 @@ use glob::glob;
 use self::field_group::FieldGroup;
 use self::post_type::PostType;
 
-pub fn process(args: &cli::args::Args) -> Result<(), ALGError> {
+pub fn generate(args: &cli::args::Args) -> Result<(), ALGError> {
     for entry in glob(&args.src).map_err(|e| ALGError::GlobError(e))? {
         match entry {
             Ok(pathbuf) => {
@@ -34,11 +34,11 @@ fn match_to_type(args: &cli::args::Args, json: Result<AcfJsonKind, ALGError>) {
     return match json {
         Ok(json) => match json {
             AcfJsonKind::FieldGroup(field_group_json) => {
-                acf::field_group::process(&field_group_json, &args.dest, args.overwrite);
+                acf::field_group::generate(&field_group_json, &args.dest, args.overwrite);
             }
             AcfJsonKind::PostType(post_type_json) => {
                 cli::output::warn("post type file");
-                acf::post_type::proccess();
+                acf::post_type::generate(post_type_json);
             }
         },
         Err(e) => {
