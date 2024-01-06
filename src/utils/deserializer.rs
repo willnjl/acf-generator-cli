@@ -5,12 +5,12 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
-use crate::acf::AcfJson;
+use crate::acf::AcfJsonKind;
 
 /**
  * open src file and turn it into a string
  */
-pub fn read_file(path: &str) -> Result<AcfJson, ALGError> {
+pub fn read_file(path: &str) -> Result<AcfJsonKind, ALGError> {
     cli::output::info("Opening file...");
 
     let mut f = match File::open(Path::new(path)) {
@@ -24,7 +24,8 @@ pub fn read_file(path: &str) -> Result<AcfJson, ALGError> {
         return Err(ALGError::IoError(err));
     }
 
-    let data: Result<AcfJson, ALGError> = serde_json::from_str(&s).map_err(ALGError::InvalidJson);
+    let data: Result<AcfJsonKind, ALGError> =
+        serde_json::from_str(&s).map_err(ALGError::InvalidJson);
 
     data
 }

@@ -30,13 +30,13 @@ pub fn process(args: &cli::args::Args) -> Result<(), ALGError> {
     Ok(())
 }
 
-fn match_to_type(args: &cli::args::Args, json: Result<AcfJson, ALGError>) {
+fn match_to_type(args: &cli::args::Args, json: Result<AcfJsonKind, ALGError>) {
     return match json {
         Ok(json) => match json {
-            AcfJson::FieldGroup(field_group_json) => {
+            AcfJsonKind::FieldGroup(field_group_json) => {
                 acf::field_group::process(&field_group_json, &args.dest, args.overwrite);
             }
-            AcfJson::PostType(post_type_json) => {
+            AcfJsonKind::PostType(post_type_json) => {
                 cli::output::warn("post type file");
                 acf::post_type::proccess();
             }
@@ -49,7 +49,7 @@ fn match_to_type(args: &cli::args::Args, json: Result<AcfJson, ALGError>) {
 }
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
-pub enum AcfJson {
+pub enum AcfJsonKind {
     FieldGroup(FieldGroup),
     PostType(PostType),
 }
