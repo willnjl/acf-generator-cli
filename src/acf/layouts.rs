@@ -17,11 +17,6 @@ impl Layout {
     }
 
     pub fn get_path(&self, field: &Field, dest: &str) -> String {
-        format!(
-            "{}/template-parts/blocks/{}/{}.php",
-            dest,
-            field.name(),
-            self.name
-        )
+        format!("{}/template-parts/{}/{}.php", dest, field.name(), self.name)
     }
 }
