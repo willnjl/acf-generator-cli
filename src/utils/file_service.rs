@@ -1,4 +1,4 @@
-use crate::cli_output::cli_output;
+use crate::cli;
 use crate::error::ALGError;
 use std::fs::{create_dir_all, File, OpenOptions};
 use std::io::Write;
@@ -29,7 +29,7 @@ impl FileService {
                 .open(&path)
             {
                 Ok(file) => {
-                    cli_output::create(&format!("layout {} created!", path));
+                    cli::output::create(&format!("layout {} created!", path));
                     Ok(FileService { file: Some(file) })
                 }
                 Err(e) => Err(ALGError::IoError(e)),
@@ -39,11 +39,11 @@ impl FileService {
         // skip existing files
         return match OpenOptions::new().create_new(true).write(true).open(path) {
             Ok(file) => {
-                cli_output::create(&format!("layout {}", path));
+                cli::output::create(&format!("layout {}", path));
                 Ok(FileService { file: Some(file) })
             }
             Err(_) => {
-                cli_output::warn(&ALGError::FileAlreadyExists(path.to_string()).to_string());
+                cli::output::warn(&ALGError::FileAlreadyExists(path.to_string()).to_string());
                 Ok(FileService { file: None })
             }
         };
