@@ -15,7 +15,7 @@ impl PostType {
     }
 
     pub fn title(&self) -> &str {
-        &self.post_type
+        &self.title
     }
 
     pub fn files(&self, dest: &str) -> Vec<String> {

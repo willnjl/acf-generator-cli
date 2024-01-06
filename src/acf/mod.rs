@@ -3,6 +3,8 @@ pub mod field_group;
 pub mod layouts;
 pub mod post_type;
 
+use std::fmt::format;
+
 use crate::acf;
 use crate::cli;
 use crate::error::ALGError;
@@ -37,7 +39,7 @@ fn match_to_type(args: &cli::args::Args, json: Result<AcfJsonKind, ALGError>) {
                 acf::field_group::generate(&field_group, &args.dest, args.overwrite);
             }
             AcfJsonKind::PostType(post_type) => {
-                cli::output::warn("post type file");
+                cli::output::warn(format!("Found post type - {}", post_type.title()));
                 acf::post_type::generate(&post_type, &args.dest, args.overwrite);
             }
         },

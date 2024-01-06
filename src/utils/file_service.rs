@@ -29,7 +29,7 @@ impl FileService {
                 .open(&path)
             {
                 Ok(file) => {
-                    cli::output::create(&format!("layout {} created!", path));
+                    cli::output::create(format!("File {} created!", path));
                     Ok(FileService { file: Some(file) })
                 }
                 Err(e) => Err(ALGError::IoError(e)),
@@ -39,11 +39,11 @@ impl FileService {
         // skip existing files
         return match OpenOptions::new().create_new(true).write(true).open(path) {
             Ok(file) => {
-                cli::output::create(&format!("layout {}", path));
+                cli::output::create(format!("layout {}", path));
                 Ok(FileService { file: Some(file) })
             }
             Err(_) => {
-                cli::output::warn(&ALGError::FileAlreadyExists(path.to_string()).to_string());
+                cli::output::warn(ALGError::FileAlreadyExists(path.to_string()).to_string());
                 Ok(FileService { file: None })
             }
         };

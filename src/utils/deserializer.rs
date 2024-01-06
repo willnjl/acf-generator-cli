@@ -11,7 +11,7 @@ use crate::acf::AcfJsonKind;
  * open src file and turn it into a string
  */
 pub fn read_file(path: &str) -> Result<AcfJsonKind, ALGError> {
-    cli::output::info("Opening file...");
+    cli::output::info(format!("Opening file - {}", path));
 
     let mut f = match File::open(Path::new(path)) {
         Ok(file) => file,
